@@ -20,6 +20,9 @@ func main() {
 	for _, salutaion := range []string{"Hello", "Greetings", "Good day"} {
 		wg.Add(1)
 
+		// 各Goroutineは同じメモリ空間で実行される
+		// salutaionへの参照を全Goroutineが持っている状態
+		// Goroutineの処理実行時にはループが終了しているので，salutaionの値はループの最後の値になっている
 		go func() {
 			defer wg.Done()
 			fmt.Println(salutaion)
