@@ -32,4 +32,7 @@ func main() {
 
 	fmt.Printf("Before:%.3f kb\n", before)
 	fmt.Printf("After:%.3f kb\n", after)
+
+	fmt.Printf("%.3f kb is allocated to per goroutine\n", (after-before)/numGoroutine/1000)
+
 }
