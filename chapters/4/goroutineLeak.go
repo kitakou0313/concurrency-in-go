@@ -10,6 +10,7 @@ func main() {
 			defer fmt.Println("dowork exited")
 			defer close(completed)
 
+			// 引数のチャンネルからの受信待ち
 			for s := range strings {
 				fmt.Println(s)
 			}
@@ -17,6 +18,8 @@ func main() {
 
 		return completed
 	}
+
+	// nilチャンネルを渡しているため，main go routineの完了まで生成したGo routineは生存し続ける
 	doWork(nil)
-	fmt.Println("Done")
+	fmt.Println("Do some work")
 }
