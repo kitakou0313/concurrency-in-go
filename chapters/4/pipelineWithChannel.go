@@ -41,6 +41,28 @@ func main() {
 		return multipliedStream
 	}
 
+	add := func(
+		done <- chan interface{},
+		intStream <- chan int,
+		additive int,
+	) <- chan int {
+		addedStream := make(chan int)
+
+		go func(){
+			defer close(addedStream)
+
+			for v := range inteStream{
+				select {
+				case <- done:
+					return 
+				case addedStream <- v + additive
+				}
+			}
+		}
+
+		return addedStream
+	}
+
 	done := make(chan interface{}, 0)
 	defer close(done)
 
