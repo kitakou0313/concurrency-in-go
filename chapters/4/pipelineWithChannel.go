@@ -42,23 +42,23 @@ func main() {
 	}
 
 	add := func(
-		done <- chan interface{},
-		intStream <- chan int,
+		done <-chan interface{},
+		intStream <-chan int,
 		additive int,
-	) <- chan int {
+	) <-chan int {
 		addedStream := make(chan int)
 
-		go func(){
+		go func() {
 			defer close(addedStream)
 
-			for v := range inteStream{
+			for v := range intStream {
 				select {
-				case <- done:
-					return 
-				case addedStream <- v + additive
+				case <-done:
+					return
+				case addedStream <- v + additive:
 				}
 			}
-		}
+		}()
 
 		return addedStream
 	}
@@ -67,7 +67,7 @@ func main() {
 	defer close(done)
 
 	inteStream := generator(done, 1, 2, 3, 4, 5)
-	pipeline := multiply(done, inteStream, 5)
+	pipeline := add(done, multiply(done, inteStream, 5), 4)
 
 	for v := range pipeline {
 		fmt.Println(v)
