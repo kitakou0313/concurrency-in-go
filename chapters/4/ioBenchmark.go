@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"io"
+	"log"
+	"os"
 	"testing"
 )
 
@@ -51,7 +54,24 @@ func take(
 	return takeStream
 }
 
-func performWrite(b testing.B, writer io.Writer) {
+func tmpFileOrFatal() *os.File {
+	file, err := os.CreateTemp("", "tmp")
+	if err != nil {
+		log.Fatal("error", err)
+	}
+	return file
+}
+
+func BenchmarkUnBuffer(b *testing.B) {
+	performWrite(b, tmpFileOrFatal())
+}
+
+func BenchmarkBufferWrite(b *testing.B) {
+	befferedFile := bufio.NewWriter(tmpFileOrFatal())
+	performWrite(b, bufio.NewWriter(befferedFile))
+}
+
+func performWrite(b *testing.B, writer io.Writer) {
 	done := make(chan interface{})
 	defer close(done)
 
@@ -59,12 +79,4 @@ func performWrite(b testing.B, writer io.Writer) {
 	for benchMark := range take(done, repeat(done, byte(0)), b.N) {
 		writer.Write([]byte{benchMark.(byte)})
 	}
-}
-
-func Benchmark() {
-
-}
-
-func main() {
-
 }
